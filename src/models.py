@@ -42,36 +42,43 @@ class Task:
         ]
 
     # ----------------------------------------------------------
+    # Alteração de status
+    # ----------------------------------------------------------
+
+    def _alterar_status(self, novo_status: str) -> None:
+        """
+        Altera o status da tarefa e registra a mudança no histórico.
+        """
+
+        status_anterior = self.status
+
+        self.status = novo_status
+
+        self.historico.append(
+            f"Status alterado de {status_anterior} "
+            f"para {self.status}"
+        )
+
+    # ----------------------------------------------------------
     # Transições de estado
     # ----------------------------------------------------------
 
     def iniciar(self) -> None:
         """Move a tarefa para In Progress."""
 
-        status_anterior = self.status
-
-        self.status = self.STATUS_IN_PROGRESS
-
-        self.historico.append(
-            f"Status alterado de {status_anterior} "
-            f"para {self.status}"
+        self._alterar_status(
+            self.STATUS_IN_PROGRESS
         )
 
     def concluir(self) -> None:
         """Move a tarefa para Done."""
 
-        status_anterior = self.status
-
-        self.status = self.STATUS_DONE
-
-        self.historico.append(
-            f"Status alterado de {status_anterior} "
-            f"para {self.status}"
+        self._alterar_status(
+            self.STATUS_DONE
         )
 
     # ----------------------------------------------------------
     # Conversão para dicionário
-    # Usado para salvar no JSON
     # ----------------------------------------------------------
 
     def to_dict(self) -> dict:
@@ -88,7 +95,6 @@ class Task:
 
     # ----------------------------------------------------------
     # Conversão do dicionário para Task
-    # Usado ao carregar o JSON
     # ----------------------------------------------------------
 
     @classmethod

@@ -11,5 +11,17 @@
             "Status alterado de To Do para In Progress",
             "Status alterado de In Progress para Done"
         ]
+    },
+    {
+        "titulo": "nati",
+        "descricao": "aula",
+        "prioridade": "Média",
+        "categoria": "Faculdade",
+        "data_limite": "2026-10-19",
+        "status": "In Progress",
+        "historico": [
+            "Tarefa criada",
+            "Status alterado de To Do para In Progress"
+        ]
     }
 ]
