@@ -2,80 +2,15 @@
 # routes.py — Rotas HTTP e interface do sistema Kanban
 # =============================================================
 
-import json
-from pathlib import Path
-
 from flask import render_template_string, request, redirect
-from src.models import Task
 
+from src.models import Task
+from src.storage import carregar_tarefas, salvar_tarefas
 
 # =============================================================
 # Persistência em JSON
 # =============================================================
 
-ARQUIVO_DADOS = (
-    Path(__file__).resolve().parent.parent
-    / "data"
-    / "tarefas.json"
-)
-
-
-def carregar_tarefas() -> list[Task]:
-    """
-    Carrega as tarefas salvas no arquivo JSON.
-    """
-
-    if not ARQUIVO_DADOS.exists():
-        return []
-
-    try:
-
-        with open(
-            ARQUIVO_DADOS,
-            "r",
-            encoding="utf-8"
-        ) as arquivo:
-
-            dados = json.load(arquivo)
-
-        return [
-            Task.from_dict(item)
-            for item in dados
-        ]
-
-    except (
-        json.JSONDecodeError,
-        OSError
-    ):
-
-        return []
-
-
-def salvar_tarefas() -> None:
-    """
-    Salva todas as tarefas no arquivo JSON.
-    """
-
-    ARQUIVO_DADOS.parent.mkdir(
-        parents=True,
-        exist_ok=True
-    )
-
-    with open(
-        ARQUIVO_DADOS,
-        "w",
-        encoding="utf-8"
-    ) as arquivo:
-
-        json.dump(
-            [
-                tarefa.to_dict()
-                for tarefa in tarefas
-            ],
-            arquivo,
-            ensure_ascii=False,
-            indent=4
-        )
 
 
 # Carrega as tarefas quando o programa é iniciado
@@ -1534,7 +1469,7 @@ def configure_routes(app) -> None:
         )
 
 
-        salvar_tarefas()
+        salvar_tarefas(tarefas)
 
 
         return redirect("/")
@@ -1623,7 +1558,7 @@ def configure_routes(app) -> None:
             tarefa.data_limite = nova_data_limite
 
 
-            salvar_tarefas()
+            salvar_tarefas(tarefas)
 
 
             return redirect("/")
@@ -1647,7 +1582,7 @@ def configure_routes(app) -> None:
 
         tarefas[id].iniciar()
 
-        salvar_tarefas()
+        salvar_tarefas(tarefas)
 
         return redirect("/")
 
@@ -1663,7 +1598,7 @@ def configure_routes(app) -> None:
 
         tarefas[id].concluir()
 
-        salvar_tarefas()
+        salvar_tarefas(tarefas)
 
         return redirect("/")
 
@@ -1679,6 +1614,6 @@ def configure_routes(app) -> None:
 
         tarefas.pop(id)
 
-        salvar_tarefas()
+        salvar_tarefas(tarefas)
 
         return redirect("/")
