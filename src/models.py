@@ -1,53 +1,129 @@
 # =============================================================
 # models.py — Entidade de domínio do sistema
-# Representa uma tarefa no quadro Kanban com seus atributos
-# e as transições de estado do fluxo de trabalho.
 # =============================================================
 
 
 class Task:
     """
     Representa uma tarefa no quadro Kanban.
-
-    Atributos:
-        titulo    (str): Nome curto da tarefa.
-        descricao (str): Detalhamento do que deve ser feito.
-        prioridade(str): Nível de urgência — 'Alta', 'Média' ou 'Baixa'.
-        status    (str): Coluna atual no Kanban —
-                         'To Do' | 'In Progress' | 'Done'.
     """
 
-    # Status possíveis, alinhados com as colunas do quadro Kanban
-    STATUS_TODO        = "To Do"
+    # Status possíveis
+    STATUS_TODO = "To Do"
     STATUS_IN_PROGRESS = "In Progress"
-    STATUS_DONE        = "Done"
+    STATUS_DONE = "Done"
 
-    def __init__(self, titulo: str, descricao: str, prioridade: str):
-        self.titulo     = titulo
-        self.descricao  = descricao
+    # Categorias possíveis
+    CATEGORIA_FACULDADE = "Faculdade"
+    CATEGORIA_TRABALHO = "Trabalho"
+    CATEGORIA_PESSOAL = "Pessoal"
+    CATEGORIA_OUTROS = "Outros"
+
+    def __init__(
+        self,
+        titulo: str,
+        descricao: str,
+        prioridade: str,
+        categoria: str = "Outros",
+        data_limite: str = ""
+    ):
+        self.titulo = titulo
+        self.descricao = descricao
         self.prioridade = prioridade
-        # Toda tarefa nasce na primeira coluna do Kanban
+        self.categoria = categoria
+        self.data_limite = data_limite
+
+        # Toda tarefa começa em To Do
         self.status = self.STATUS_TODO
+
+        # Histórico inicial
+        self.historico = [
+            "Tarefa criada"
+        ]
 
     # ----------------------------------------------------------
     # Transições de estado
     # ----------------------------------------------------------
 
     def iniciar(self) -> None:
-        """Move a tarefa de 'To Do' para 'In Progress'."""
+        """Move a tarefa para In Progress."""
+
+        status_anterior = self.status
+
         self.status = self.STATUS_IN_PROGRESS
 
+        self.historico.append(
+            f"Status alterado de {status_anterior} "
+            f"para {self.status}"
+        )
+
     def concluir(self) -> None:
-        """Move a tarefa de 'In Progress' para 'Done'."""
+        """Move a tarefa para Done."""
+
+        status_anterior = self.status
+
         self.status = self.STATUS_DONE
 
+        self.historico.append(
+            f"Status alterado de {status_anterior} "
+            f"para {self.status}"
+        )
+
     # ----------------------------------------------------------
-    # Representação textual (útil para debug)
+    # Conversão para dicionário
+    # Usado para salvar no JSON
+    # ----------------------------------------------------------
+
+    def to_dict(self) -> dict:
+
+        return {
+            "titulo": self.titulo,
+            "descricao": self.descricao,
+            "prioridade": self.prioridade,
+            "categoria": self.categoria,
+            "data_limite": self.data_limite,
+            "status": self.status,
+            "historico": self.historico
+        }
+
+    # ----------------------------------------------------------
+    # Conversão do dicionário para Task
+    # Usado ao carregar o JSON
+    # ----------------------------------------------------------
+
+    @classmethod
+    def from_dict(cls, dados: dict):
+
+        tarefa = cls(
+            dados.get("titulo", ""),
+            dados.get("descricao", ""),
+            dados.get("prioridade", "Baixa"),
+            dados.get("categoria", "Outros"),
+            dados.get("data_limite", "")
+        )
+
+        tarefa.status = dados.get(
+            "status",
+            cls.STATUS_TODO
+        )
+
+        tarefa.historico = dados.get(
+            "historico",
+            ["Tarefa criada"]
+        )
+
+        return tarefa
+
+    # ----------------------------------------------------------
+    # Representação textual
     # ----------------------------------------------------------
 
     def __repr__(self) -> str:
+
         return (
             f"Task(titulo={self.titulo!r}, "
             f"prioridade={self.prioridade!r}, "
+            f"categoria={self.categoria!r}, "
+            f"data_limite={self.data_limite!r}, "
             f"status={self.status!r})"
         )
