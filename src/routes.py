@@ -1474,8 +1474,7 @@ def configure_routes(app) -> None:
 
         return redirect("/")
 
-
-    # ----------------------------------------------------------
+        # ----------------------------------------------------------
     # Editar tarefa
     # ----------------------------------------------------------
 
@@ -1487,89 +1486,25 @@ def configure_routes(app) -> None:
 
         tarefa = tarefas[id]
 
-
         if request.method == "POST":
 
-
-            novo_titulo = request.form["titulo"]
-
-            nova_descricao = request.form["descricao"]
-
-            nova_prioridade = request.form["prioridade"]
-
-            nova_categoria = request.form["categoria"]
-
-            nova_data_limite = request.form["data_limite"]
-
-
-            # Registra alterações no histórico
-
-            if tarefa.titulo != novo_titulo:
-
-                tarefa.historico.append(
-                    f"Título alterado de "
-                    f"'{tarefa.titulo}' "
-                    f"para '{novo_titulo}'"
-                )
-
-
-            if tarefa.descricao != nova_descricao:
-
-                tarefa.historico.append(
-                    "Descrição alterada"
-                )
-
-
-            if tarefa.prioridade != nova_prioridade:
-
-                tarefa.historico.append(
-                    f"Prioridade alterada de "
-                    f"{tarefa.prioridade} "
-                    f"para {nova_prioridade}"
-                )
-
-
-            if tarefa.categoria != nova_categoria:
-
-                tarefa.historico.append(
-                    f"Categoria alterada de "
-                    f"{tarefa.categoria} "
-                    f"para {nova_categoria}"
-                )
-
-
-            if tarefa.data_limite != nova_data_limite:
-
-                tarefa.historico.append(
-                    f"Prazo alterado de "
-                    f"{tarefa.data_limite} "
-                    f"para {nova_data_limite}"
-                )
-
-
-            tarefa.titulo = novo_titulo
-
-            tarefa.descricao = nova_descricao
-
-            tarefa.prioridade = nova_prioridade
-
-            tarefa.categoria = nova_categoria
-
-            tarefa.data_limite = nova_data_limite
-
+            tarefa.atualizar(
+                request.form["titulo"],
+                request.form["descricao"],
+                request.form["prioridade"],
+                request.form["categoria"],
+                request.form["data_limite"]
+            )
 
             salvar_tarefas(tarefas)
 
-
             return redirect("/")
-
 
         return render_template_string(
             EDITAR_HTML,
             tarefa=tarefa,
             id=id
         )
-
 
     # ----------------------------------------------------------
     # Iniciar

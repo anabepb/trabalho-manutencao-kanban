@@ -33,10 +33,8 @@ class Task:
         self.categoria = categoria
         self.data_limite = data_limite
 
-        # Toda tarefa começa em To Do
         self.status = self.STATUS_TODO
 
-        # Histórico inicial
         self.historico = [
             "Tarefa criada"
         ]
@@ -47,7 +45,8 @@ class Task:
 
     def _alterar_status(self, novo_status: str) -> None:
         """
-        Altera o status da tarefa e registra a mudança no histórico.
+        Altera o status da tarefa e registra a mudança
+        no histórico.
         """
 
         status_anterior = self.status
@@ -78,10 +77,69 @@ class Task:
         )
 
     # ----------------------------------------------------------
+    # Atualização da tarefa
+    # ----------------------------------------------------------
+
+    def atualizar(
+        self,
+        titulo: str,
+        descricao: str,
+        prioridade: str,
+        categoria: str,
+        data_limite: str
+    ) -> None:
+        """
+        Atualiza os dados da tarefa e registra no histórico
+        somente os campos que foram alterados.
+        """
+
+        if self.titulo != titulo:
+            self.historico.append(
+                f"Título alterado de "
+                f"'{self.titulo}' "
+                f"para '{titulo}'"
+            )
+
+        if self.descricao != descricao:
+            self.historico.append(
+                "Descrição alterada"
+            )
+
+        if self.prioridade != prioridade:
+            self.historico.append(
+                f"Prioridade alterada de "
+                f"{self.prioridade} "
+                f"para {prioridade}"
+            )
+
+        if self.categoria != categoria:
+            self.historico.append(
+                f"Categoria alterada de "
+                f"{self.categoria} "
+                f"para {categoria}"
+            )
+
+        if self.data_limite != data_limite:
+            self.historico.append(
+                f"Prazo alterado de "
+                f"{self.data_limite} "
+                f"para {data_limite}"
+            )
+
+        self.titulo = titulo
+        self.descricao = descricao
+        self.prioridade = prioridade
+        self.categoria = categoria
+        self.data_limite = data_limite
+
+    # ----------------------------------------------------------
     # Conversão para dicionário
     # ----------------------------------------------------------
 
     def to_dict(self) -> dict:
+        """
+        Converte a tarefa para dicionário para salvar no JSON.
+        """
 
         return {
             "titulo": self.titulo,
@@ -99,6 +157,9 @@ class Task:
 
     @classmethod
     def from_dict(cls, dados: dict):
+        """
+        Cria uma Task utilizando os dados carregados do JSON.
+        """
 
         tarefa = cls(
             dados.get("titulo", ""),
